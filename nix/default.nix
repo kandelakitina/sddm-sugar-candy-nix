@@ -24,6 +24,8 @@ stdenvNoCC.mkDerivation rec {
     kdePackages.qtdeclarative
   ];
 
+  buildInputs = [ kdePackages.qtbase ];
+
   nativeBuildInputs = [ wrapQtAppsHook ];
 
   installPhase = ''
