@@ -1,15 +1,6 @@
-{
-  stdenvNoCC,
-  lib,
-  sddm,
-  qtbase,
-  qtsvg,
-  qtquickcontrols2,
-  qtgraphicaleffects,
-  wrapQtAppsHook,
-  version ? "git",
-  themeConf ? ../theme.conf,
-}:
+{ stdenvNoCC, lib, kdePackages, wrapQtAppsHook, version ? "git"
+, themeConf ? ../theme.conf }:
+
 stdenvNoCC.mkDerivation rec {
   pname = "sddm-sugar-candy-nix";
   inherit version;
@@ -17,28 +8,23 @@ stdenvNoCC.mkDerivation rec {
   dontBuild = true;
 
   src = lib.cleanSourceWith {
-    filter = name: type:
-      (builtins.match ".*(nix)" name) == null;
+    filter = name: type: (builtins.match ".*(nix)" name) == null;
     src = lib.cleanSourceWith {
-      filter = name: type: let
-        basename = builtins.baseNameOf name;
-      in
-        (builtins.match "(flake\.lock)|(props\.json)" basename) == null;
+      filter = name: type:
+        let basename = builtins.baseNameOf name;
+        in (builtins.match "(flake.lock)|(props.json)" basename) == null;
       src = lib.cleanSource ../.;
     };
   };
 
   propagatedUserEnvPkgs = [
-    sddm
-    qtbase
-    qtsvg
-    qtgraphicaleffects
-    qtquickcontrols2
+    kdePackages.sddm
+    kdePackages.qtbase
+    kdePackages.qtsvg
+    kdePackages.qtdeclarative
   ];
 
-  nativeBuildInputs = [
-    wrapQtAppsHook
-  ];
+  nativeBuildInputs = [ wrapQtAppsHook ];
 
   installPhase = ''
     local installDir=$out/share/sddm/themes/${pname}
